@@ -1,0 +1,149 @@
+===============================================================================
+======================= Tema 2 Proiectarea Algoritmilor =======================
+============================== Costea Mihai 322CB =============================
+===============================================================================
+
+Minlexbfs:
+
+Am facut efectiv ceea ce a zis cerinta si anume sa afisez parcurgerea bfs 
+lexicografic. Am folosit un vector de priority_queue care reprezinta vecinii
+pentru fiecare nod pusi intr-un minheap dupa indicele sau de nod.
+Am ales aceasta abordare si nu o sortare deoarece o sortare are o complexitate
+in worst case at maximum de O(nlog(n)) iar introducerea intr-un heap are timp
+amortizat O(1) iar extragerea este O(log(n)) pentru fiecare element.
+Avand in vedere ca inserarea elementelor intr-un heap sau intr-un vector este
+O(1) cazul acesta este neinteresant. Dar la citire din vector avem O(1).
+Singurul lucru pe care l-am plati este overhead-ul de sortare de O(nlog(n)) iar
+dupa o citire totala ar fi O(nlog(n)). In schimb la heap extragerea unui element
+reduce dimensiunea totala a heap-ului cu 1 unitate, iar extragerea are un time
+complexity de O(log(n)) => daca e sa extragem toate elementele dintr-un heap am
+avea o complexitate de O(log(n) + log(n-1) + ... + log(2) + log(1) = O(log(n!))
+ < O(log(n^n)) = O(nlog(n)). Deci asimtotic vorbind am avea un timp mai bun ca
+ sortarea fara macar sa citim elementele din vector.
+
+ Acest procedeu de care am vorbit se aplica pentru fiecare nod din graf unde
+ n-ul prezentat anterior este numarul de muchii adiacente cu nodul respectiv.
+
+ In final de executa un bfs pentru a descoperi minum lexical bfs avand garantia
+ ca de ficare data cand un nod nou va fi pus in coada bfs-ului nodul respectiv
+ va fi minim lexicografic fata de celelalte noduri adiacente cu acesta.
+ In final avem o complexitate de O(|V| + |E|) din cauza algoritmului bfs la 
+ care se adauga complexitatea extragerii elementelor din heap O(log(n!)).
+
+===============================================================================
+===============================================================================
+
+Disjcnt:
+
+Nu stiu dc problema asta are numele asta. Poate o exita o implementare cu multimi 
+disjuncte dar pare complicat si nu stiu de ce te-ai complica asa mult cand un
+Tarjan iti rezolva toate problemele si o face si intr-o maniera eleganta. Pe 
+langa ca aflu ciclurile maximale din graf cu Tarjan daca il mai adaptez un pic
+aflu si noduri critice din graf toate la pret de o parcurgere.
+
+Ideea e ca imi notez multiplicitatea unei muchii. Asta insemnand ca daca nu am
+o muchie intre 2 noduri multiplicitatea ei va fi 0 iar daca am o muchie va fi 1
+si daca am 2 va fi 2 etc.
+Am nevoie de o stiva care sa retina timpii de finalizare a fiecarui nod pe care 
+il vizitez cand fac bfs pe graf, si ma folosesc de fapul ca am o stiva de 
+apeluri ca sa nu mai aloc o stiva inutila pe care sa o transmit ca parametru 
+functiei de traversare a grafului.
+De fiecare daca cand parcurg o muchie ii REDUC MULTIPLICITATEA ei. Acest lucru
+e foarte important deoarece asa as putea ca in  functie de multiplicitatea unei
+muchii sa spun daca muchia respectiva are caracter de muchie in ambele sensuri 
+sau nu. Practic transform graful neorientat in graf orientat. Iar problema
+devine sa gasesc elementele tari conexe maximale din graf iar dupa sa fac suma
+de combinari de |<nr_elemente_componetata_conexa>| luate cate 2 pentru fiecare
+element tare conex din graf care are mai mult de 1 nod.
+Mai am si un vector de indx care tine minte timpii de vizitare pentru fiecare 
+nod si un vector low care tine minte legatura minima pe care o are un nod cu
+vecinii lui adica Tarjan. De fiecare data cand un apel recursiv se termina
+cresc un contor care imi spune ca am avut un nod si i-am vizitat toti copiii
+acestuia. Fiind recursiv, la un moment de timp intr-un nod o sa am nr copiilor
+vizitati din nodul resectiv. Acest lucru se face pana cand low[node] == indx[node]
+ceea ce inseamna ca nodul respectiv este radacina pentru componenta respectiva
+ceea ce inseamna ca trebuie sa calculez combinari de numar de copii+1 luate cate
+2 si sa o adaug la suma globala de perechi posibile.
+
+Complexitate este O(|V| + |E|) deoarece este o parcurgere in adancime modificata
+iar modificarile aduse acesteia se executa in O(1) => complexitate finala 
+O(|V| + |E|).
+
+
+===============================================================================
+===============================================================================
+
+rtd:
+
+Nici problem asta nu stiu de ce se numeste asa. La asta nici nu imi dau seama
+de la ce vine rtd. Random trace dice?
+
+Ideea e urmatoarea. Din cauza faptului ca o miscare influenteaza miscarile 
+urmatoare nu ai putea sti la un moment de timp daca faci o parcurgere naiva
+daca ai ajuns la un minim. Ai putea sa iei mereu cel mai scurt drum dar din
+cauza ca o alegere influenteaza alta alegere (este o functie de alegerea 
+anterioara) trebuie ori sa gasestiun pattern in miscarile zarului in asa fel
+incat sa fi sigur ca daca alegi un anumit drum drumul ales de tine va fi minim,
+dar acest lucru pare destul de complicat si ar fi necesara o analiza destul de
+amanuntita, desi, cam asta e solutia optima. Bineinteles daca se poate. Sau,
+ai putea sa observi ca in fiecare celula din matrice pot exista maxim 24 de
+configuratii in care zarul se poate afla asta inseamna ca daca multiplici
+ficare celula din matrice cu 24 si faci o parcurgere a matricei o sa ajungi in
+punctul in care noul tau graf/matrice nu mai e dependent de alegerile anterioare
+pentru ca tu efectiv ai marit spatiul posibil de alegeri in asa fel incat costul
+pentru a intra intr-o celula din matrice nu mai este o functie de alegerile 
+anterioare ci este o functie constanta. Iar rezultatul la care dorim sa ajungem
+este una din cele 24 de celule de finish. Din acest punct se aplica dijkstra pe
+matricea/graful nou creat (deoarece avem costuri strict pozitive) pentru a gasi
+solutia optima.
+In implementare am decis sa ma folosesc de un unordered_map<int,unordered_set<int> >
+pentru a stoca valorile unde matricea este blocata deoare un 
+unordered_set<pair<int, int> ar fi avut nevoie sa ii fie definit un hash custom
+iar acest lucru desi interesant de altfel ar fi putut sa aduca multe buguri si
+din cauza ca alte 3-4 deadline-uri bat la usa am zis ca asta e o problema pentru
+alta data. Din fericire C++-ul are predefinit hash-uri pentru int ;)
+Am insistat folosirea de map/set pentru accesul in O(1) a celulelor blocante din
+matrice.
+Am observat ca informatia minima necesara pentru a iti da seama in ce configuratie
+te afli sunt 2 din cele 3 seturi de perechi de fete. Adica aveam de ales intre
+a codifia configuratia unei celuri prin a ma folosi de fata pe care sta zarul 
+fata pe care ar sta daca s-ar rostogoli la dreapta sau fata pe care ar sta daca
+s-ar rostogoli in fata sau bineinteles analoagele lor (7 - fata_respectiva).
+Am hardcodat un fel de map<pair<int,int>int> care ar trebui sa imi dea o valoare
+are reprezinta indicele unde stochez o anumita configuratie pe baza valorii pe 
+care sta zarul si pe baza valorii pe care ar sta zarul daca acesta s-ar rostogoli
+la dreapta. Am facut acest lucru pentru rapiditate si consider ca este pefect
+plauzibil deoarece acea bucata de cod nu se modifica odata cu modificarea inputului
+(nu am un zar cu un numar variabil de fete). Lucru care ar fi facut problema
+un pic mai dificila dar parerea mea mai interesanta. Poate v-am dat idee pentru
+temele de la anul la PA ;).
+
+Complexitatea algoritmului este O((|E| + |V|)log(|V|)). Unde |V| este n*m*24.
+Iar |E| = n*m*24/4 = n*m*6 => complexitatea finala este O(30*n*mlog(n*m*24)) = 
+O(n*m*log(n*m)).
+
+===============================================================================
+===============================================================================
+
+revedges:
+
+Pe noi efectiv ne intereseaza care este costul minim de a ajunge dintr-o parte
+a grafului in alta parte a grafului unde costul 0 este un drum direct iar un 
+cost de 1 reprezinta traversarea pe o muchie inapoi. Din cauza faptului ca 
+avem foarte multe queries un dijkstra dupa toate queries nu ar avea un rezultat
+foarte bun asa ca am ales sa folosesc Floyd Warshall care va avea o complexitate
+de O(n^3) unde n sunt numarul de noduri din graf. Dupa care pentru fiecare query
+o sa spun rezultatul dat de Floyd. Deci complexitatea finala este O(n^3 + q) unde
+q este numarul de queries din graf. S-ar fi putut implementa un cache la varianta
+cu Dijkstra sau sa se faca un Dijkstra pentru fiecare pereche de nod si sa tin
+minte rezultatul => sa obtin un timp un pic mai satisfacator pe acesta problema.
+
+===============================================================================
+===============================================================================
+
+Nota tema: GOOD. Problema 2 a fost favorita mea, efectiv a fost o placere 
+sa o scriu.
+
+===============================================================================
+===============================================================================
+
