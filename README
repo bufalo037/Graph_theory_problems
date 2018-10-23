@@ -1,149 +1,134 @@
 ===============================================================================
-======================= Tema 2 Proiectarea Algoritmilor =======================
-============================== Costea Mihai 322CB =============================
+============================== Costea Mihai ===================================
 ===============================================================================
 
 Minlexbfs:
 
-Am facut efectiv ceea ce a zis cerinta si anume sa afisez parcurgerea bfs 
-lexicografic. Am folosit un vector de priority_queue care reprezinta vecinii
-pentru fiecare nod pusi intr-un minheap dupa indicele sau de nod.
-Am ales aceasta abordare si nu o sortare deoarece o sortare are o complexitate
-in worst case at maximum de O(nlog(n)) iar introducerea intr-un heap are timp
-amortizat O(1) iar extragerea este O(log(n)) pentru fiecare element.
-Avand in vedere ca inserarea elementelor intr-un heap sau intr-un vector este
-O(1) cazul acesta este neinteresant. Dar la citire din vector avem O(1).
-Singurul lucru pe care l-am plati este overhead-ul de sortare de O(nlog(n)) iar
-dupa o citire totala ar fi O(nlog(n)). In schimb la heap extragerea unui element
-reduce dimensiunea totala a heap-ului cu 1 unitate, iar extragerea are un time
-complexity de O(log(n)) => daca e sa extragem toate elementele dintr-un heap am
-avea o complexitate de O(log(n) + log(n-1) + ... + log(2) + log(1) = O(log(n!))
- < O(log(n^n)) = O(nlog(n)). Deci asimtotic vorbind am avea un timp mai bun ca
- sortarea fara macar sa citim elementele din vector.
+I did what the requirement said, specifically, I displayed the bfs path 
+lexicographically. I used a priority_queue vector that represents the neighbors
+for every node placed in a minheap after the its node indices.
+I chose this approach instead of sorting because a sorting has a complexity, in
+worst case at a maximum O(nlog(n)) and the introduction in a heap has 
+amortized time O(1) and the extraction is O(log(n)) for every element.
+Considering that the insertion of elements in a heap or vector is O(1), this
+case in uninteresting. But, we have O(1) when reading from a vector. The only thing
+we would pay is the sorting overhead 0(nlog(n)) and after a total reading it 
+would be 0(nlog(n)). Instead, on heap, the extraction of an element reduces the
+total dimension of the heap by 1 unit, and the extraction has a complexity time 
+of O(log(n) + log(n-1) + ... + log(2) + log(1) = O(log(n!))< O(log(n^n)) = 
+O(nlog(n)). So, asymptotically speaking, we would have a better time than the
+sorting without even reading the vector elements.
 
- Acest procedeu de care am vorbit se aplica pentru fiecare nod din graf unde
- n-ul prezentat anterior este numarul de muchii adiacente cu nodul respectiv.
+This procedure that I spoke of applies for every node from the graph where the 
+previously presented "n" is the number of edges adjacent with the respective node.
 
- In final de executa un bfs pentru a descoperi minum lexical bfs avand garantia
- ca de ficare data cand un nod nou va fi pus in coada bfs-ului nodul respectiv
- va fi minim lexicografic fata de celelalte noduri adiacente cu acesta.
- In final avem o complexitate de O(|V| + |E|) din cauza algoritmului bfs la 
- care se adauga complexitatea extragerii elementelor din heap O(log(n!)).
+In the end, a bfs is executed to discover the minimum lexical bfs having the 
+guarantee that every time a new node will be placed in the bfs's queue, the 
+respective node will be lexicographically minimum compared to the other
+adjacent nodes. Finally, we have a O(|V| + |E|) complexity because of the bfs
+algorithm where the complexity of extraction of heap O(log(n!)) elements is 
+added.
 
 ===============================================================================
 ===============================================================================
 
 Disjcnt:
 
-Nu stiu dc problema asta are numele asta. Poate o exita o implementare cu multimi 
-disjuncte dar pare complicat si nu stiu de ce te-ai complica asa mult cand un
-Tarjan iti rezolva toate problemele si o face si intr-o maniera eleganta. Pe 
-langa ca aflu ciclurile maximale din graf cu Tarjan daca il mai adaptez un pic
-aflu si noduri critice din graf toate la pret de o parcurgere.
+I don't know why this exercise has this name. Maybe there is an implementation 
+of disjunctive sets but it seems complicated and I don't know why would you 
+put so much effort when you Tarjan resolves all your problems and makes it in
+an elegant manner. Also, I find out the maximal cycles from the
+graph with Tarjan if I adapt it a bit and I find out the critical nodes from
+the graph for the price of one crossing.
 
-Ideea e ca imi notez multiplicitatea unei muchii. Asta insemnand ca daca nu am
-o muchie intre 2 noduri multiplicitatea ei va fi 0 iar daca am o muchie va fi 1
-si daca am 2 va fi 2 etc.
-Am nevoie de o stiva care sa retina timpii de finalizare a fiecarui nod pe care 
-il vizitez cand fac bfs pe graf, si ma folosesc de fapul ca am o stiva de 
-apeluri ca sa nu mai aloc o stiva inutila pe care sa o transmit ca parametru 
-functiei de traversare a grafului.
-De fiecare daca cand parcurg o muchie ii REDUC MULTIPLICITATEA ei. Acest lucru
-e foarte important deoarece asa as putea ca in  functie de multiplicitatea unei
-muchii sa spun daca muchia respectiva are caracter de muchie in ambele sensuri 
-sau nu. Practic transform graful neorientat in graf orientat. Iar problema
-devine sa gasesc elementele tari conexe maximale din graf iar dupa sa fac suma
-de combinari de |<nr_elemente_componetata_conexa>| luate cate 2 pentru fiecare
-element tare conex din graf care are mai mult de 1 nod.
-Mai am si un vector de indx care tine minte timpii de vizitare pentru fiecare 
-nod si un vector low care tine minte legatura minima pe care o are un nod cu
-vecinii lui adica Tarjan. De fiecare data cand un apel recursiv se termina
-cresc un contor care imi spune ca am avut un nod si i-am vizitat toti copiii
-acestuia. Fiind recursiv, la un moment de timp intr-un nod o sa am nr copiilor
-vizitati din nodul resectiv. Acest lucru se face pana cand low[node] == indx[node]
-ceea ce inseamna ca nodul respectiv este radacina pentru componenta respectiva
-ceea ce inseamna ca trebuie sa calculez combinari de numar de copii+1 luate cate
-2 si sa o adaug la suma globala de perechi posibile.
+The idea is that I always note the multiplicity of an edge. Meaning that, if I
+don't have an edge between 2 nodes, its multiplicity will be 0 and if I have an
+edge it will be 1 and if I have 2 it will be 2 etc.
+I need a stack to retain the finalization times of each node that I visit when 
+when I make bfs on the graph and I use the fact that I have a stack of calls to 
+avoid allocating a useless stack that I transmit as parameter to the crossing 
+function of the graph.
+Every time I cross an edge I reduce its multiplicity. This is very important 
+because this way I could say if the respective edge has edge character in both 
+ways or not depending on the multiplicity of a single edge. Basically, I
+transform the unoriented graph in an oriented one. The actual problem is to
+find strong maximal connected elements from the graph and to make the sum of 
+|<nr_elemente_componetata_conexa>| elements taken 2 by 2 for every strong
+connected element from the graph that has more than 1 nodes.
+I also have an indx vector that remembers the visit times for every node and a 
+low vector that remembers the minimum link that a node has with its own
+neighbors, meaning Tarjan. Every time when a recursive call ends, I increase a 
+counter that tells me that I had a node and that I visited all its children.
+Being recursive, at a time moment in a node I will have a number of children 
+visited from the respective node. This is done until [node] == indx[node], which
+means that the respective node is the root for the first respective component 
+which means that I have to calculate combinations of numbers of children+1 taken
+2 by 2 and I have to add it to the global sum of possible pairs.
 
-Complexitate este O(|V| + |E|) deoarece este o parcurgere in adancime modificata
-iar modificarile aduse acesteia se executa in O(1) => complexitate finala 
-O(|V| + |E|).
-
+The complexity is O(|V| + |E|) because it is a modified crossing in depth and
+its modifications are executed in O(1) => final complexity O(|V| + |E|).
 
 ===============================================================================
 ===============================================================================
 
 rtd:
 
-Nici problem asta nu stiu de ce se numeste asa. La asta nici nu imi dau seama
-de la ce vine rtd. Random trace dice?
+Here's the idea. Because of the fact that a move influences the following moves,
+you could not know at a time moment if you are making a native crossing if you 
+reached a minimum. You could always take the shortest path but because a choice 
+always affects another choice (it is a function of previous choice) you have to 
+find a pattern in the dice's moves in a way to be sure that if you choose a 
+certain path, that path will be minimal. However, this is quite complicated and
+a detailed analysis would be required, even though this is an optimal solution.
+Or, you could observe that in every matrix cell there can be up to 24
+configurations where the dice could be. This means that if you multiply every
+cell from the matrix by 24 and make a crossing of the matrix, you will reach the 
+point in which your new graph/matrix is no longer dependent on the previous 
+choices  because you increased the possible choice space in a way that the cost 
+of entry in a matrix cell is no longer a previous choice function but a constant
+function. The result we want to reach is one of the 24 finish cells. From point
+dijkstra is applied on the newly created matrix/graph (because we have strictly
+positive costs) to find the optimal solution.
+In the implementation I decided to use a unordered_map<int,unordered_set<int> >
+to store the values where the matrix is blocked because a 
+unordered_set<pair<int, int> would've needed a defined hash custom and this 
+thing, although interesting, could've led to many bugs. Fortunately, the C++
+has the hashes predefined for int.
+I insisted on using the map/set for acess in O(1) of the blocking cells from 
+the matrix.
+I noticed that the minimal information required to figure out in what
+configuration you are inside of, are 2 of the 3 sets of face pairs. Meaning, I
+had the choice between encoding the configuration of some cells by using the 
+face the dice sits on, the face the dice would sit if it was rolled to the
+right or the face the dice would sit on if it was rolled in the front or its
+analogs (7- fata_respectiva).
+I hardcoded some kind of map<pair<int,int>int> that should give me a value that
+represents the indices where I store a certain configuration based on the value 
+on which the dice sits on and on the value on which the dice would sit on if it
+rolled to the right. I did this for the sake of speed and I consider that it is
+perfectly plausible because that piece of code isn't being modified together
+with the input modification (I don't have a dice with a variable number of 
+faces). 
 
-Ideea e urmatoarea. Din cauza faptului ca o miscare influenteaza miscarile 
-urmatoare nu ai putea sti la un moment de timp daca faci o parcurgere naiva
-daca ai ajuns la un minim. Ai putea sa iei mereu cel mai scurt drum dar din
-cauza ca o alegere influenteaza alta alegere (este o functie de alegerea 
-anterioara) trebuie ori sa gasestiun pattern in miscarile zarului in asa fel
-incat sa fi sigur ca daca alegi un anumit drum drumul ales de tine va fi minim,
-dar acest lucru pare destul de complicat si ar fi necesara o analiza destul de
-amanuntita, desi, cam asta e solutia optima. Bineinteles daca se poate. Sau,
-ai putea sa observi ca in fiecare celula din matrice pot exista maxim 24 de
-configuratii in care zarul se poate afla asta inseamna ca daca multiplici
-ficare celula din matrice cu 24 si faci o parcurgere a matricei o sa ajungi in
-punctul in care noul tau graf/matrice nu mai e dependent de alegerile anterioare
-pentru ca tu efectiv ai marit spatiul posibil de alegeri in asa fel incat costul
-pentru a intra intr-o celula din matrice nu mai este o functie de alegerile 
-anterioare ci este o functie constanta. Iar rezultatul la care dorim sa ajungem
-este una din cele 24 de celule de finish. Din acest punct se aplica dijkstra pe
-matricea/graful nou creat (deoarece avem costuri strict pozitive) pentru a gasi
-solutia optima.
-In implementare am decis sa ma folosesc de un unordered_map<int,unordered_set<int> >
-pentru a stoca valorile unde matricea este blocata deoare un 
-unordered_set<pair<int, int> ar fi avut nevoie sa ii fie definit un hash custom
-iar acest lucru desi interesant de altfel ar fi putut sa aduca multe buguri si
-din cauza ca alte 3-4 deadline-uri bat la usa am zis ca asta e o problema pentru
-alta data. Din fericire C++-ul are predefinit hash-uri pentru int ;)
-Am insistat folosirea de map/set pentru accesul in O(1) a celulelor blocante din
-matrice.
-Am observat ca informatia minima necesara pentru a iti da seama in ce configuratie
-te afli sunt 2 din cele 3 seturi de perechi de fete. Adica aveam de ales intre
-a codifia configuratia unei celuri prin a ma folosi de fata pe care sta zarul 
-fata pe care ar sta daca s-ar rostogoli la dreapta sau fata pe care ar sta daca
-s-ar rostogoli in fata sau bineinteles analoagele lor (7 - fata_respectiva).
-Am hardcodat un fel de map<pair<int,int>int> care ar trebui sa imi dea o valoare
-are reprezinta indicele unde stochez o anumita configuratie pe baza valorii pe 
-care sta zarul si pe baza valorii pe care ar sta zarul daca acesta s-ar rostogoli
-la dreapta. Am facut acest lucru pentru rapiditate si consider ca este pefect
-plauzibil deoarece acea bucata de cod nu se modifica odata cu modificarea inputului
-(nu am un zar cu un numar variabil de fete). Lucru care ar fi facut problema
-un pic mai dificila dar parerea mea mai interesanta. Poate v-am dat idee pentru
-temele de la anul la PA ;).
-
-Complexitatea algoritmului este O((|E| + |V|)log(|V|)). Unde |V| este n*m*24.
-Iar |E| = n*m*24/4 = n*m*6 => complexitatea finala este O(30*n*mlog(n*m*24)) = 
+The algorithm complexity is O((|E| + |V|)log(|V|)). Where |V| is n*m*24. And
+|E| = n*m*24/4 = n*m*6 => final complexity is O(30*n*mlog(n*m*24)) = 
 O(n*m*log(n*m)).
-
 ===============================================================================
 ===============================================================================
 
 revedges:
 
-Pe noi efectiv ne intereseaza care este costul minim de a ajunge dintr-o parte
-a grafului in alta parte a grafului unde costul 0 este un drum direct iar un 
-cost de 1 reprezinta traversarea pe o muchie inapoi. Din cauza faptului ca 
-avem foarte multe queries un dijkstra dupa toate queries nu ar avea un rezultat
-foarte bun asa ca am ales sa folosesc Floyd Warshall care va avea o complexitate
-de O(n^3) unde n sunt numarul de noduri din graf. Dupa care pentru fiecare query
-o sa spun rezultatul dat de Floyd. Deci complexitatea finala este O(n^3 + q) unde
-q este numarul de queries din graf. S-ar fi putut implementa un cache la varianta
-cu Dijkstra sau sa se faca un Dijkstra pentru fiecare pereche de nod si sa tin
-minte rezultatul => sa obtin un timp un pic mai satisfacator pe acesta problema.
+The interest we have is which is the minimal cost to travel form one side of
+the graph to another side of the graph where the cost 0 is a direct path and a
+1 cost represents the crossing on an edge backwards. Because of the fact we 
+have a lot of queries, a dijkstra after all the queries would not have a very
+good result. So, I chose to use Floyd Warshall which will have a O(n^3) 
+complexity where "n" is the number of nodes from the graph. Afterwards, for 
+every query I will say the result given by Floyd. So, the final complexity is 
+ O(n^3 + q) where "q" is the number of queries from the graph. A cache could've 
+ been implemented to the Dijkstra variant or a dijkstra could've been made for 
+ every pair of nodes and to remember the result => to obtain a slightly more 
+ satisfying time on this exercise.
 
 ===============================================================================
 ===============================================================================
-
-Nota tema: GOOD. Problema 2 a fost favorita mea, efectiv a fost o placere 
-sa o scriu.
-
-===============================================================================
-===============================================================================
-
